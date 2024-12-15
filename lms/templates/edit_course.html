@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Edit Course</h2>
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="course-form">
+            <h3>Course Details</h3>
+            {{ course_form.as_p }}
+        </div>
+        
+        <div class="modules-form">
+            <h3>Modules</h3>
+            {{ module_formset.management_form }}
+            {% for form in module_formset %}
+            <div class="module-form">
+                <h4>Module {{ forloop.counter }}</h4>
+                {{ form.as_p }}
+            </div>
+            {% endfor %}
+        </div>
+        
+        <button type="submit" class="btn">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

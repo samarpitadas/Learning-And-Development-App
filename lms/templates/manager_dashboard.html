@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h2 class="dashboard-title">Manager Dashboard</h2>
+        <div class="dashboard-actions">
+            <a href="{% url 'create_request' %}" class="btn btn-primary">Create Request</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 class="card-title">Requests Overview</h3>
+        <div class="table-responsive">
+            <table id="request-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Concept</th>
+                        <th>Duration</th>
+                        <th>Deadline</th>
+                        <th>Status</th>
+                        <th>Created Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in requests %}
+                    <tr>
+                        <td>{{ request.name }}</td>
+                        <td>{{ request.description }}</td>
+                        <td>{{ request.concept }}</td>
+                        <td>{{ request.duration }}</td>
+                        <td>{{ request.deadline }}</td>
+                        <td>
+                            <span class="status-badge status-{{ request.status|lower }}">
+                                {{ request.status }}
+                            </span>
+                        </td>
+                        <td>{{ request.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if request.id %}
+                            <a href="{% url 'view_request' request.id %}" class="btn btn-sm btn-secondary">View</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">No requests available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-pending {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.status-approved {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.status-rejected {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}
+

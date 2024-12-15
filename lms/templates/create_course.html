@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Create New Course</h2>
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="course-form">
+            <h3>Course Details</h3>
+            {{ course_form.as_p }}
+        </div>
+        
+        <div class="modules-form">
+            <h3>Modules</h3>
+            {{ module_formset.management_form }}
+            <div id="module-forms">
+                {% for form in module_formset %}
+                <div class="module-form">
+                    <h4>Module {{ forloop.counter }}</h4>
+                    {{ form.as_p }}
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="add-module" class="btn">Add Another Module</button>
+        </div>
+        
+        <button type="submit" class="btn">Create Course</button>
+    </form>
+</div>
+
+<script>
+document.getElementById('add-module').addEventListener('click', function() {
+    const forms = document.getElementsByClassName('module-form');
+    const formNum = forms.length;
+    const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+    
+    const newForm = forms[0].cloneNode(true);
+    newForm.innerHTML = newForm.innerHTML.replace(/form-0/g, `form-${formNum}`);
+    newForm.innerHTML = newForm.innerHTML.replace(/form\[0\]/g, `form[${formNum}]`);
+    
+    document.getElementById('module-forms').appendChild(newForm);
+    totalForms.value = formNum + 1;
+});
+</script>
+{% endblock %}

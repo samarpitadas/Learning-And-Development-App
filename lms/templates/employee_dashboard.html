@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h2 class="dashboard-title">My Courses</h2>
+    
+    <div class="courses-grid">
+        {% for course_data in courses_data %}
+        <div class="course-card">
+            <div class="course-header">
+                <h3 class="course-title">{{ course_data.course.name }}</h3>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" style="width: {{ course_data.progress|floatformat:0 }}%;"></div>
+                    </div>
+                    <span class="progress-text">{{ course_data.progress|floatformat:0 }}% Complete</span>
+                </div>
+            </div>
+            
+            <p class="course-description">{{ course_data.course.description }}</p>
+            
+            <div class="modules-list">
+                <h4>Modules</h4>
+                {% for module in course_data.modules %}
+                <div class="module-item {% if module.completed %}completed{% endif %}">
+                    <div class="module-info">
+                        <h5>{{ module.module.title }}</h5>
+                        <p>{{ module.module.content }}</p>
+                    </div>
+                    {% if not module.completed %}
+                    <form method="post" action="{% url 'mark_module_complete' module.module.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-primary">Mark Complete</button>
+                    </form>
+                    {% else %}
+                    <span class="completion-badge">✓ Completed</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="course-feedback">
+                <h4>Course Feedback</h4>
+                {% if not course_data.has_feedback %}
+                <form method="post" action="{% url 'submit_feedback' course_data.course.id %}" class="feedback-form">
+                    {% csrf_token %}
+                    <div class="rating-section">
+                        <label>Rating:</label>
+                        <div class="star-rating">
+                            {% for i in '12345' %}
+                            <input type="radio" name="rating" value="{{ i }}" required id="star{{ i }}">
+                            <label for="star{{ i }}">★</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="feedback-text">
+                        <label for="feedback_text">Your Feedback:</label>
+                        <textarea name="feedback_text" id="feedback_text" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                </form>
+                {% else %}
+                <div class="feedback-submitted">
+                    <p>Your feedback has been submitted</p>
+                    <div class="submitted-rating">
+                        {% for i in course_data.feedback.rating|rjust:5 %}
+                        <span class="star {% if forloop.counter <= course_data.feedback.rating %}filled{% endif %}">★</span>
+                        {% endfor %}
+                    </div>
+                    <p class="feedback-text">{{ course_data.feedback.feedback_text }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-courses">
+            <p>No courses assigned yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.course-card {
+    background-color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1.5rem;
+}
+
+.course-header {
+    margin-bottom: 1rem;
+}
+
+.course-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.progress-text {
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+.course-description {
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+.modules-list {
+    margin-top: 1.5rem;
+}
+
+.module-item {
+    background-color: var(--secondary-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.module-item.completed {
+    border-left: 4px solid var(--accent-color);
+}
+
+.module-info h5 {
+    margin-bottom: 0.5rem;
+}
+
+.completion-badge {
+    display: inline-block;
+    background-color: var(--accent-color);
+    color: #fff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.course-feedback {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.star-rating {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    gap: 0.25rem;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #ddd;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    color: #ffc107;
+}
+
+.submitted-rating .star {
+    font-size: 1.25rem;
+    color: #ddd;
+}
+
+.submitted-rating .star.filled {
+    color: #ffc107;
+}
+</style>
+{% endblock %}
+

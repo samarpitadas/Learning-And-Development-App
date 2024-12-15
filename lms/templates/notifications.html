@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Notifications</h2>
+    {% if notifications %}
+        <div class="list-group">
+            {% for notification in notifications %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">{{ notification.message }}</p>
+                            <small class="text-muted">{{ notification.created_at|timesince }} ago</small>
+                        </div>
+                        <div>
+                            <a href="{% url 'mark_notification_read' notification.id %}" class="btn btn-sm btn-primary">Mark as Read</a>
+                            {% if notification.course %}
+                                <a href="#" class="btn btn-sm btn-info">View Course</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No new notifications</p>
+    {% endif %}
+</div>
+{% endblock %}

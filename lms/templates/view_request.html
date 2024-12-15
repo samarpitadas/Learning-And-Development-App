@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>View Request</h1>
+  <p>Name: {{ request.name }}</p>
+  <p>Description: {{ request.description }}</p>
+  <p>Concept: {{ request.concept }}</p>
+  <p>Duration: {{ request.duration }}</p>
+  <p>Deadline: {{ request.deadline }}</p>
+  <p>Status: {{ request.status }}</p>
+  <p>Created Date: {{ request.created_at }}</p>
+{% endblock %}
